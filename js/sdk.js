@@ -227,7 +227,7 @@ deathplace
 	  app_key: 'WCQY-7J1Q-GKVV-7DNM-SQ5M-9Q5H-JX3H-CMJK',
 	  environment: 'sandbox',
 	  save_access_token: true,
-	  auth_callback: document.location.protocol + '//'+document.location.hostname+'/',
+	  auth_callback: 'http://rootsdev.org/SumoApp/',
 	  http_function: $.ajax,
 	  deferred_function: $.Deferred
 	});
