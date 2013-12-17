@@ -383,16 +383,14 @@ ul.list-collapsed li {
 .cardFrame .name {
   color: #0051C4;
   font-size: 22px;
-  width: 88%;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  max-width: 88%;
   display: inline-block;
 }
 .cardFrame .nameWrapper a,
 .cardFrame .nameWrapper span {
-  padding-left: 14px !important;
+  padding-left: 54px !important;
 }
 .cardFrame .nameWrapper i {
   width: 44px;
@@ -402,6 +400,7 @@ ul.list-collapsed li {
   display: block;
   padding-left: 7px;
   margin-top: 0;
+  position: absolute;
 }
 .watchGadget {
   display: none;
