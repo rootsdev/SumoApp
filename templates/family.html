@@ -1,0 +1,58 @@
+{{#families}}
+  <div class="panel panel-default tree-family">
+    <div class="panel-heading">
+      <div class="connector">
+        &nbsp;
+      </div>
+      <div class="coupleWrapper{{#current}} current{{/current}}"{{#relationshipId}} data-relationshipId="{{relationshipId}}"{{/relationshipId}}{{#coupleId}} data-coupleId="{{coupleId}}"{{/coupleId}}>
+        {{#husband}}
+          {{> person}}
+        {{/husband}} 
+        {{^husband}} 
+          <div class="personWrapper">
+            <div class="nameWrapper">
+              <i class="fs-icon-male icon-rounded">&nbsp;</i>
+            </div>
+            <ul class="list-collapsed">
+              <li>&nbsp;</li>
+            </ul>            
+          </div>             
+        {{/husband}}
+        {{#wife}}
+          {{> person}}    
+        {{/wife}} 
+        {{^wife}} 
+          <div class="personWrapper">
+            <div class="nameWrapper">
+              <i class="fs-icon-female icon-rounded">&nbsp;</i>
+            </div>
+            <ul class="list-collapsed">
+              <li>&nbsp;</li>
+            </ul>                        
+          </div>        
+        {{/wife}}
+      </div>
+      {{#event}}
+        {{> event}}
+      {{/event}}
+      <div class="clearboth">
+        &nbsp;
+      </div>
+    </div>
+    <div class="panel-body">
+      <table class="table-hover">
+      {{#children}}
+        <tr>
+          <td>
+            {{> person}}
+          </td>
+        </tr>    
+      {{/children}}
+      {{^children}}
+        <tr><td><h3>No children</h3></td></tr>
+      {{/children}}
+      </table>
+    </div>
+  </div>
+  </div>
+{{/families}}
