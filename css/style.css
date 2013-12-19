@@ -379,6 +379,7 @@ ul.list-collapsed li {
 }
 .popover {
   max-width: auto;
+  min-width: 400px;
 }
 .cardFrame .name {
   color: #0051C4;
