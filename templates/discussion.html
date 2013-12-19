@@ -1,145 +1,34 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title"><a class="collapsed" data-parent=
-    "#accordion" data-toggle="collapse" href=
-    "#collapseOne">Discussion #1</a> <small class=
-    "discussion-updated">updated <time datetime=
-    "2001-05-15 19:00">14 mins ago</time></small> <span class=
-    "badge pull-right">5</span></h4>
-  </div>
-  <div class="panel-collapse collapse" id="collapseOne" style=
-  "height: 0px;">
-    <div class="panel-body">
-      <div class="media">
-        <a class="pull-left fa fa-comments-o" href="#" style=
-        "font-style: italic">&nbsp;</a>
-        <div class="media-body">
-          <div class="discussion">
-            <h4 class="media-heading">This is a test</h4>Cras sit
-            amet nibh libero, in gravida nulla. Nulla vel metus
-            scelerisque ante sollicitudin commodo. Cras purus odio,
-            vestibulum in vulputate at, tempus viverra turpis.
-            Fusce condimentum nunc ac nisi vulputate fringilla.
-            Donec lacinia congue felis in faucibus.
-            <h6>by <a class="fs-contributor" href="#dovy">Dovy
-            Paukstys</a>, <small><time datetime=
-            "2001-05-15 19:00">14 mins ago</time></small></h6>
-            <div class="media">
-              <a class="pull-left fa fa-comments-o" href="#" style=
-              "font-style: italic">&nbsp;</a>
-              <div class="media-body">
-                Cras sit amet nibh libero, in gravida nulla. Nulla
-                vel metus scelerisque ante sollicitudin commodo.
-                Cras purus odio, vestibulum in vulputate at, tempus
-                viverra turpis. Fusce condimentum nunc ac nisi
-                vulputate fringilla. Donec lacinia congue felis in
-                faucibus.
-                <h6>by <a class="fs-contributor" href="#dovy">Dovy
-                Paukstys</a>, <small><time datetime=
-                "2001-05-15 19:00">14 mins ago</time></small></h6>
-                <div class="media">
-                  <a class="pull-left fa fa-comments-o" href="#"
-                  style="font-style: italic">&nbsp;</a>
-                  <div class="media-body">
-                    Cras sit amet nibh libero, in gravida nulla.
-                    Nulla vel metus scelerisque ante sollicitudin
-                    commodo. Cras purus odio, vestibulum in
-                    vulputate at, tempus viverra turpis. Fusce
-                    condimentum nunc ac nisi vulputate fringilla.
-                    Donec lacinia congue felis in faucibus.
-                    <h6>by <a class="fs-contributor" href=
-                    "#dovy">Dovy Paukstys</a>,
-                    <small><time datetime="2001-05-15 19:00">14
-                    mins ago</time></small></h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="media">
-              <a class="pull-left fa fa-comments-o" href="#" style=
-              "font-style: italic">&nbsp;</a>
-              <div class="media-body">
-                Cras sit amet nibh libero, in gravida nulla. Nulla
-                vel metus scelerisque ante sollicitudin commodo.
-                Cras purus odio, vestibulum in vulputate at, tempus
-                viverra turpis. Fusce condimentum nunc ac nisi
-                vulputate fringilla. Donec lacinia congue felis in
-                faucibus.
-                <h6>by <a class="fs-contributor" href="#dovy">Dovy
-                Paukstys</a>, <small><time datetime=
-                "2001-05-15 19:00">14 mins ago</time></small></h6>
-              </div>
+{{#discussions}}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a class="collapsed" data-toggle="collapse" href="#discussion-{{id}}">{{title}}</a> 
+        <small class="discussion-updated">updated 
+          <abbr class="timeago" title="{{modified}}">{{modified}}</abbr>
+        </small> 
+        <span class="badge pull-right">{{commentNumber}}</span>
+      </h4>
+    </div>
+    <div class="panel-collapse collapse" id="discussion-{{id}}" style=
+    "height: 0px;">
+      <div class="panel-body">
+        <div class="media">
+          <a class="pull-left fa fa-comments-o" href="#" style=
+          "font-style: italic">&nbsp;</a>
+          <div class="media-body">
+            <div class="discussion">
+              <h4 class="media-heading">{{description}}
+              <h6>by <a class="fs-contributor" href="#{{contributor}}">{{contributor}}</a>, <small><abbr class="timeago" title="{{created}}">{{created}}</abbr></small></h6>
+                {{#comments}}
+                  {{> comment}}
+                {{/comments}} 
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title"><a class="collapsed" data-parent=
-    "#accordion" data-toggle="collapse" href=
-    "#collapseTwo">Discussion #2</a> <small class=
-    "discussion-updated">updated <time datetime=
-    "2001-05-15 19:00">14 mins ago</time></small> <span class=
-    "badge pull-right">5</span></h4>
-  </div>
-  <div class="panel-collapse collapse" id="collapseTwo" style=
-  "height: 0px;">
-    <div class="panel-body">
-      <div class="media">
-        <a class="pull-left fa fa-comments-o" href="#" style=
-        "font-style: italic">&nbsp;</a>
-        <div class="media-body">
-          <div class="discussion">
-            <h4 class="media-heading">This is a test</h4>Cras sit
-            amet nibh libero, in gravida nulla. Nulla vel metus
-            scelerisque ante sollicitudin commodo. Cras purus odio,
-            vestibulum in vulputate at, tempus viverra turpis.
-            Fusce condimentum nunc ac nisi vulputate fringilla.
-            Donec lacinia congue felis in faucibus.
-
-            <h6>by <a class="fs-contributor" href="#dovy">Dovy
-            Paukstys</a>, <small><time datetime=
-            "2001-05-15 19:00">14 mins ago</time></small></h6>
-
-            <div class="media">
-              <a class="pull-left fa fa-comments-o" href="#" style=
-              "font-style: italic">&nbsp;</a>
-              <div class="media-body">
-                Cras sit amet nibh libero, in gravida nulla. Nulla
-                vel metus scelerisque ante sollicitudin commodo.
-                Cras purus odio, vestibulum in vulputate at, tempus
-                viverra turpis. Fusce condimentum nunc ac nisi
-                vulputate fringilla. Donec lacinia congue felis in
-                faucibus.
-                <h6>by <a class="fs-contributor" href="#dovy">Dovy
-                Paukstys</a>, <small><time datetime=
-                "2001-05-15 19:00">14 mins ago</time></small></h6>
-              </div>
-            </div>
-            <div class="media">
-              <a class="pull-left fa fa-comments-o" href="#" style=
-              "font-style: italic">&nbsp;</a>
-              <div class="media-body">
-                Cras sit amet nibh libero, in gravida nulla. Nulla
-                vel metus scelerisque ante sollicitudin commodo.
-                Cras purus odio, vestibulum in vulputate at, tempus
-                viverra turpis. Fusce condimentum nunc ac nisi
-                vulputate fringilla. Donec lacinia congue felis in
-                faucibus.
-
-                <h6>by <a class="fs-contributor" href="#dovy">Dovy
-                Paukstys</a>, <small><time datetime=
-                "2001-05-15 19:00">14 mins ago</time></small></h6>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+{{/discussions}}
+{{^discussions}}
+  <center>None</center>
+{{/discussions}}

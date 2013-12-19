@@ -1440,29 +1440,6 @@ define('discussions',[
 
   /**
    * @ngdoc function
-   * @name discussions.types:type.DiscussionRef
-   * @description
-   *
-   * Reference to a discussion on a person
-   */
-  var DiscussionRef = exports.DiscussionRef = function() {
-
-  };
-
-  exports.DiscussionRef.prototype = {
-    constructor: DiscussionRef,
-    /**
-     * @ngdoc function
-     * @name discussions.types:type.DiscussionRef#getId
-     * @methodOf discussions.types:type.DiscussionRef
-     * @function
-     * @return {String} Id of the discussion - pass into {@link discussions.functions:getDiscussion getDiscussion} for details
-     */
-    getId: function() { return this.resource ? this.resource.replace(/^.*\//, '').replace(/\?.*$/, '') : this.resource; }
-  };
-
-  /**
-   * @ngdoc function
    * @name discussions.functions:getPersonDiscussionRefs
    * @function
    *
@@ -1470,7 +1447,7 @@ define('discussions',[
    * Get references to discussions for a person
    * The response includes the following convenience function
    *
-   * - `getDiscussionRefs()` - get an array of {@link discussions.types:type.DiscussionRef DiscussionRefs} from the response
+   * - `getDiscussionIds()` - get an array of discussion ids from the response
    *
    * {@link https://familysearch.org/developers/docs/api/tree/Person_Discussion_References_resource FamilySearch API Docs}
    *
@@ -1483,12 +1460,11 @@ define('discussions',[
    */
   exports.getPersonDiscussionRefs = function(pid, params, opts) {
     return plumbing.get('/platform/tree/persons/'+encodeURI(pid)+'/discussion-references', params, {'Accept': 'application/x-fs-v1+json'}, opts,
-      helpers.compose(
-        helpers.objectExtender({getDiscussionRefs: function() { return maybe(maybe(this.persons)[0])['discussion-references'] || []; }}),
-        helpers.constructorSetter(DiscussionRef, 'discussion-references', function(response) {
-          return maybe(maybe(response).persons)[0];
-        })
-      ));
+      helpers.objectExtender({getDiscussionIds: function() {
+        return helpers.map(maybe(maybe(this.persons)[0])['discussion-references'], function(url) {
+          return url ? url.replace(/^.*\//, '').replace(/\?.*$/, '') : url; // TODO how else to get the discussion id?
+        });
+      }}));
   };
 
   /**
@@ -1861,8 +1837,8 @@ define('person',[
 
     /**
      * @ngdoc function
-     * @name sources.types:type.SourceRef#getModified
-     * @methodOf sources.types:type.SourceRef
+     * @name person.types:type.Name#getModified
+     * @methodOf person.types:type.Name
      * @function
      * @return {Number} last modified timestamp
      */
@@ -1952,8 +1928,8 @@ define('person',[
 
     /**
      * @ngdoc function
-     * @name sources.types:type.SourceRef#getModified
-     * @methodOf sources.types:type.SourceRef
+     * @name person.types:type.Fact#getModified
+     * @methodOf person.types:type.Fact
      * @function
      * @return {Number} last modified timestamp
      */
@@ -2578,7 +2554,7 @@ define('memories',[
 
   /**
    * @ngdoc function
-   * @name memories.functions:getPersonMemoryReferences
+   * @name memories.functions:getPersonMemoryRefs
    * @function
    *
    * @description
@@ -2596,7 +2572,7 @@ define('memories',[
    * @param {Object=} opts options to pass to the http function specified during init
    * @return {Object} promise for the response
    */
-  exports.getPersonMemoryReferences = function(pid, params, opts) {
+  exports.getPersonMemoryRefs = function(pid, params, opts) {
     return plumbing.get('/platform/tree/persons/'+encodeURI(pid)+'/memory-references', params, {}, opts,
       helpers.compose(
         helpers.objectExtender({getMemoryRefs: function() { return maybe(maybe(this.persons)[0]).evidence || []; }}),
@@ -2698,8 +2674,8 @@ define('memories',[
 
     /**
      * @ngdoc function
-     * @name notes.types:type.Note#getModified
-     * @methodOf notes.types:type.Note
+     * @name memories.types:type.Memory#getModified
+     * @methodOf memories.types:type.Memory
      * @function
      * @return {Number} timestamp
      */
@@ -3115,7 +3091,8 @@ define('notes',[
    * @return {Object} promise for the response
    */
   exports.getChildAndParentsNoteRefs = function(caprid, params, opts) {
-    return plumbing.get('/platform/tree/child-and-parents-relationships/'+encodeURI(caprid)+'/notes', params, {}, opts,
+    return plumbing.get('/platform/tree/child-and-parents-relationships/'+encodeURI(caprid)+'/notes', params,
+      {'Accept': 'application/x-fs-v1+json'}, opts,
       helpers.compose(
         helpers.objectExtender({getNoteRefs: function() { return maybe(maybe(this.childAndParentsRelationships)[0]).notes || []; }}),
         helpers.constructorSetter(NoteRef, 'notes', function(response) {
@@ -3146,7 +3123,8 @@ define('notes',[
    * @return {Object} promise for the response
    */
   exports.getChildAndParentsNote = function(caprid, nid, params, opts) {
-    return plumbing.get('/platform/tree/child-and-parents-relationships/'+encodeURI(caprid)+'/notes/'+encodeURI(nid), params, {}, opts,
+    return plumbing.get('/platform/tree/child-and-parents-relationships/'+encodeURI(caprid)+'/notes/'+encodeURI(nid), params,
+      {'Accept': 'application/x-fs-v1+json'}, opts,
       helpers.compose(
         helpers.objectExtender({getNote: function() { return maybe(maybe(maybe(this.childAndParentsRelationships)[0]).notes)[0]; }}),
         helpers.constructorSetter(Note, 'notes', function(response) {
@@ -3601,7 +3579,7 @@ define('searchAndMatch',[
         searchMatchResponseMapper,
         function(obj, promise) {
           obj.getContext = function() {
-            return promise.getResponseHeader('X-fs-page-context');
+            return promise.getResponseHeader('X-FS-Page-Context');
           };
           return obj;
         }
@@ -3965,7 +3943,8 @@ define('sources',[
    * @return {Object} promise for the response
    */
   exports.getChildAndParentsSourceRefs = function(id, params, opts) {
-    return plumbing.get('/platform/tree/child-and-parents-relationships/'+encodeURI(id)+'/source-references', params, {}, opts,
+    return plumbing.get('/platform/tree/child-and-parents-relationships/'+encodeURI(id)+'/source-references', params,
+      {'Accept': 'application/x-fs-v1+json'}, opts,
       helpers.compose(
         helpers.objectExtender({getSourceRefs: function() { return maybe(maybe(this.childAndParentsRelationships)[0]).sources || []; }}),
         helpers.constructorSetter(SourceRef, 'sources', function(response) {
@@ -4378,7 +4357,7 @@ define('user',[
 
   /**
    * @ngdoc function
-   * @name user.functions:getCurrentUserPerson
+   * @name user.functions:getCurrentUserPersonId
    * @function
    *
    * @description
@@ -4392,7 +4371,7 @@ define('user',[
    * @param {Object=} opts options to pass to the http function specified during init
    * @return {Object} promise for the (string) id of the current user person
    */
-  exports.getCurrentUserPerson = function(params, opts) {
+  exports.getCurrentUserPersonId = function(params, opts) {
     var promise = plumbing.get('/platform/tree/current-person', params, {}, opts);
     var d = globals.deferredWrapper();
     var returnedPromise = helpers.extendHttpPromise(d.promise, promise);
@@ -4558,7 +4537,6 @@ define('FamilySearch',[
 
     // discussions
     Discussion: discussions.Discussion,
-    DiscussionRef: discussions.DiscussionRef,
     Comment: discussions.Comment,
     getPersonDiscussionRefs: discussions.getPersonDiscussionRefs,
     getDiscussion: discussions.getDiscussion,
@@ -4567,7 +4545,7 @@ define('FamilySearch',[
     // memories
     Memory: memories.Memory,
     MemoryRef: memories.MemoryRef,
-    getPersonMemoryReferences: memories.getPersonMemoryReferences,
+    getPersonMemoryRefs: memories.getPersonMemoryRefs,
     getMemory: memories.getMemory,
     getMemoryComments: memories.getMemoryComments,
     getMemoryPersonas: memories.getMemoryPersonas,
@@ -4637,7 +4615,7 @@ define('FamilySearch',[
     Agent: user.Agent,
     User: user.User,
     getCurrentUser: user.getCurrentUser,
-    getCurrentUserPerson: user.getCurrentUserPerson,
+    getCurrentUserPersonId: user.getCurrentUserPersonId,
     getAgent: user.getAgent,
 
     // plumbing

@@ -64,7 +64,7 @@ $(document).ready(function () {
 	});
 
 	FamilySearch.init({
-	  app_key: 'WCQY-7J1Q-GKVV-7DNM-SQ5M-9Q5H-JX3H-CMJK',
+	  app_key: 'WCQY-7J1Q-GKVV-7DNM-SQ5M-9Q5H-JX3H-CMJK', // Sandbox
 	  environment: 'sandbox',
 	  save_access_token: true,
 	  auth_callback: "http://rootsdev.org/SumoApp/",
@@ -76,38 +76,48 @@ $(document).ready(function () {
 
 
 	function changesWidget(selector) {
-		var sourcesData = SumoWidgets['changesContainer.html'].render();		
-		$('.changesWidgetContainer').html(sourcesData);
+		if (!selector) {
+			return;
+		}		
+		var changesData = SumoWidgets['changesContainer.html'].render();		
+		$(selector).html(changesData);
 			// Get the person source references
 			FamilySearch.getPersonChangeSummary(id).then(function (response) {
+
+				response = response.getChanges();
+				if (!response) {
+					var html = SumoWidgets['changes.html'].render();
+	        $('.change-objects').html(html);  	
+					return;
+				}
 				
 				console.log('Changes');
 				console.log(response);
-				console.log(response.getChanges());
-				if (!response.persons) {
-					$('.change-objects').html('None'); 
-					return;
-				}
-				var sources = new Array();
+				
+				var changes = new Array();
 				// Queue the source description call
 				var promises = [];
-				for (var s = 0, sourceLength = response.persons[0].sources.length; s < sourceLength; s++) {
-					sources[s] = sourceWidgetDetails(response.persons[0].sources[s]);
-					promises.push(sourceWidgetPromise(sources[s].sourceId));
+				for (var c = 0, changeLength = response.length; c < changeLength; c++) {
+					changes[c] = sourceWidgetDetails(response[c]);
+					promises.push(sourceWidgetPromise(changes[c].sourceId));
 				}
 				// Process the results after completed
 				$.when.apply($, promises).then(function() {
-					var sources2 = [];
+					var changes2 = [];
   				for (var i = 0, len = arguments.length; i < len; i++) {
-  					sources2[i] = sourceWidgetFullDetails(arguments[i]);
-  					for ( var attr in sources2[i] ) { sources[i][attr] = sources2[i][attr]; }
+  					changes2[i] = sourceWidgetFullDetails(arguments[i]);
+  					for ( var attr in changes2[i] ) { 
+  						if (changes2[i][attr] != "") {
+  							changes[i][attr] = changes2[i][attr]; 	
+  						}
+  					}
   				}
-	  			if (!sources) {
+	  			if (!changes) {
 	  				return;
 	  			}
-  				var theData = { sources : sources };
-	        var sourcesData = SumoWidgets['change.html'].render(theData);
-	        $('.change-objects').html(sourcesData);  	
+  				var theData = { changes : changes };
+	        var changesData = SumoWidgets['change.html'].render(theData);
+	        $('.change-objects').html(changesData);  	
 	        jQuery("abbr.timeago").timeago();			
 				});
 			});
@@ -115,64 +125,68 @@ $(document).ready(function () {
 
 
 	function discussionsWidget(selector) {
-		var sourcesData = SumoWidgets['discussionsContainer.html'].render();		
-		$('.discussionWidgetContainer').html(sourcesData);
+		if (!selector) {
+			return;
+		}		
+		var discussionsContainer = SumoWidgets['discussionsContainer.html'].render();		
+		$(selector).html(discussionsContainer);
 			// Get the person source references
 			FamilySearch.getPersonDiscussionRefs(id).then(function (response) {
-				console.log(response);
-				console.log(response.getDiscussionRefs());
-				if (!response.persons) {
-					$('.discussion-objects').html('None'); 
+				var ids = response.getDiscussionIds();
+				
+				if (!ids) {
+					var discussionsData = SumoWidgets['discussion.html'].render();
+	        $('.discussion-objects').html(discussionsData);  	
 					return;
 				}
 				
-				return;
-				var discussion = new Array();
 				// Queue the source description call
 				var promises = [];
-				for (var s = 0, sourceLength = response.persons[0].discussion.length; s < sourceLength; s++) {
-					sources[s] = sourceWidgetDetails(response.persons[0].sources[s]);
-					promises.push(sourceWidgetPromise(sources[s].sourceId));
+				for (var d = 0, discussionLength = ids.length; d < discussionLength; d++) {
+					promises.push(discussionWidgetPromise(ids[d]));
 				}
 				// Process the results after completed
 				$.when.apply($, promises).then(function() {
-					var sources2 = [];
+					var discussions = new Array();
   				for (var i = 0, len = arguments.length; i < len; i++) {
-  					sources2[i] = sourceWidgetFullDetails(arguments[i]);
-  					for ( var attr in sources2[i] ) { sources[i][attr] = sources2[i][attr]; }
+  					discussions[i] = discussionWidgetDetails(arguments[i]);
   				}
-	  			if (!sources) {
+  				console.log(discussions);
+	  			if (!discussions) {
 	  				return;
 	  			}
-  				var theData = { sources : sources };
-	        var sourcesData = SumoWidgets['source.html'].render(theData);
-	        $('.source-objects').html(sourcesData);  	
+  				var theData = { discussions : discussions };
+  				
+  				console.log(theData);
+	        var discussionsData = SumoWidgets['discussion.html'].render(theData, {
+	        	comment:SumoWidgets['discussionComment.html'],
+	        });
+	        $('.discussion-objects').html(discussionsData);  	
 	        jQuery("abbr.timeago").timeago();			
 				});
 			});
 	}
 	// Process the refs return to a useful object.
-	function discussionWidgetDetails(source) {
+	function discussionWidgetDetails(discussion) {
+
+		discussion = discussion.getDiscussion();
 		var data = {
-			id : source.id,
-			sourceId : source.getSourceDescriptionId(),
-			contributor : source.attribution.contributor.resourceId,
-			modified : new Date(source.attribution.modified).toISOString(),
-			tags : source.tags,
-			justification : source.attribution.changeMessage,
+			id : discussion.id.replace('ds.disc.', ''),
+			htmlId : discussion.id.replace('ds.disc.', ''),
+			title : discussion.title,
+			description : discussion.details,
+			contributor : discussion.contributor.resourceId.replace('cis.user.', ''),
+			created : new Date(discussion.created).toISOString(),
+			modified : new Date(discussion.modified).toISOString(),
+			commentNumber : discussion.numberOfComments,
 		};
-		// Clean up the tags
-		var tags = new Array();
-		for (var t = 0, tagsLength = data.tags.length; t < tagsLength; t++) {
-			tags[t] = { tag: data.tags[t].resource.replace('http://gedcomx.org/', '') };
-		}
-		data.tags = tags;
+		
 		return data;
 	}
 
 	// Queue the response for the source descriptionc all
 	function discussionWidgetPromise(id) {
-		return FamilySearch.getSourceDescription(id);
+		return FamilySearch.getDiscussion(id);
 	}
 
 	// Extract the useful details from the source descriptionc all
@@ -188,13 +202,15 @@ $(document).ready(function () {
 	}	
 
 	function sourcesWidget(selector) {
+		if (!selector) {
+			return;
+		}		
 		var sourcesData = SumoWidgets['sourcesContainer.html'].render();		
-		$('.sourcesWidgetContainer').html(sourcesData);
+		$(selector).html(sourcesData);
 			// Get the person source references
 			FamilySearch.getPersonSourceRefs(id).then(function (response) {
-				console.log(response);
 				if (!response.persons) {
-					$('.source-objects').html('None'); 
+					$('.source-objects').html('<center>None</center>'); 
 					return;
 				}
 				var sources = new Array();
@@ -209,7 +225,11 @@ $(document).ready(function () {
 					var sources2 = [];
   				for (var i = 0, len = arguments.length; i < len; i++) {
   					sources2[i] = sourceWidgetFullDetails(arguments[i]);
-  					for ( var attr in sources2[i] ) { sources[i][attr] = sources2[i][attr]; }
+  					for ( var attr in sources2[i] ) { 
+  						if (sources2[i][attr] != "") {
+  							sources[i][attr] = sources2[i][attr]; 	
+  						}
+  					}
   				}
 	  			if (!sources) {
 	  				return;
@@ -231,12 +251,15 @@ $(document).ready(function () {
 			tags : source.tags,
 			justification : source.attribution.changeMessage,
 		};
-		// Clean up the tags
-		var tags = new Array();
-		for (var t = 0, tagsLength = data.tags.length; t < tagsLength; t++) {
-			tags[t] = { tag: data.tags[t].resource.replace('http://gedcomx.org/', '') };
+		if (data.tags) {
+			// Clean up the tags
+			var tags = new Array();
+			for (var t = 0, tagsLength = data.tags.length; t < tagsLength; t++) {
+				tags[t] = { tag: data.tags[t].resource.replace('http://gedcomx.org/', '') };
+			}
+			data.tags = tags;			
 		}
-		data.tags = tags;
+		
 		return data;
 	}
 
