@@ -116,7 +116,7 @@ $(document).ready(function () {
 
 	function discussionsWidget(selector) {
 		var sourcesData = SumoWidgets['discussionsContainer.html'].render();		
-		$('.sourcesWidgetContainer').html(sourcesData);
+		$('.discussionWidgetContainer').html(sourcesData);
 			// Get the person source references
 			FamilySearch.getPersonDiscussionRefs(id).then(function (response) {
 				console.log(response);
@@ -192,6 +192,7 @@ $(document).ready(function () {
 		$('.sourcesWidgetContainer').html(sourcesData);
 			// Get the person source references
 			FamilySearch.getPersonSourceRefs(id).then(function (response) {
+				console.log(response);
 				if (!response.persons) {
 					$('.source-objects').html('None'); 
 					return;
